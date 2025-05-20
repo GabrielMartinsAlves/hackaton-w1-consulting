@@ -10,7 +10,6 @@ export default function AcompanhamentoPage() {
       <main className="p-4">
         <h1 className="text-xl font-bold text-black mb-4">Acompanhamento</h1>
 
-        {/* Card do projeto */}
         <div className="bg-[#F9F9F9] rounded-lg p-4 mb-6">
           <p className="text-xs text-[#555555] mb-1">Projeto</p>
           <h2 className="font-bold text-sm text-black mb-1">Holding Silva Participações</h2>
@@ -25,7 +24,6 @@ export default function AcompanhamentoPage() {
           <ProgressBar percentage={60} />
         </div>
 
-        {/* Etapas */}
         <h2 className="text-md font-semibold text-black mb-2">Detalhamento das Etapas</h2>
         <div className="flex flex-col gap-2">
           <EtapaItem
@@ -53,8 +51,7 @@ export default function AcompanhamentoPage() {
             status="pendente"
           />
         </div>
-
-        {/* Botão pequeno e centralizado */}
+        
         <div className="mt-6 flex justify-center">
           <button className="bg-[#022028] text-white px-6 py-3 rounded-md text-sm font-semibold">
             Baixar Relatório

@@ -1,12 +1,10 @@
-// src/components/EtapaItem.tsx
-
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck,
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
-import { faClock } from '@fortawesome/free-regular-svg-icons'; // ícone de relógio não preenchido
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 type Status = 'concluido' | 'em_andamento' | 'pendente';
 
