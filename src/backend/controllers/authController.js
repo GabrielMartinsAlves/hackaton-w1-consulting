@@ -9,12 +9,12 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 router.post('/register', async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password, name } = req.body
     const existingUser = await userModel.findByEmail(email)
     if (existingUser) return res.status(400).json({ error: 'email already registered' })
 
     const hashedPassword = await bcrypt.hash(password, 10)
-    const user = await userModel.create({ email, password: hashedPassword })
+    const user = await userModel.create({ email, password: hashedPassword, name })
     res.status(201).json({ message: 'user created', userId: user.id })
   } catch (err) {
     res.status(400).json({ error: err.message })
