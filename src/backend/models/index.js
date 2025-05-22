@@ -6,7 +6,6 @@ const config = require('./config.js');
 const db = {};
 const sequelize = new Sequelize(config.url, config);
 
-// Define uma ordem específica para carregar os modelos para evitar problemas de dependência
 const modelFiles = [
   'statusModel.js',
   'usersModel.js',
@@ -15,7 +14,6 @@ const modelFiles = [
   'stepsModel.js'
 ];
 
-// Carrega os modelos na ordem especificada
 modelFiles.forEach(file => {
   if (fs.existsSync(path.join(__dirname, file))) {
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);

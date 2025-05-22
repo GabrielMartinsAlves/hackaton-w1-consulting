@@ -16,7 +16,7 @@ app.use(cors());
 const authRoutes = require('./controllers/authController');
 const { authMiddleware } = require('./controllers/authController');
 
-app.use('/auth', authRoutes.router); // Use authRoutes.router aqui
+app.use('/auth', authRoutes.router);
 
 app.get('/', (req, res) => {
   res.json({ message: 'API está funcionando!' });

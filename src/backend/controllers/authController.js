@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('../models'); // Importa o db do models/index.js
-const User = db.User; // Acessa o modelo User a partir do db
+const db = require('../models');
+const User = db.User;
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
