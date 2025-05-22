@@ -1,11 +1,24 @@
 'use client';
 
-import HeaderMobile from '@/components/HeaderMobile';
+import { useState, useEffect } from 'react';
+import Sidebar from '@/components/Sidebar';
 import DocumentoRow from '@/components/DocumentoRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
 export default function DocumentosPage() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 1024);
+    }
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const documentos = [
     { nome: 'contrato_social.pdf', status: 'ok' },
     { nome: 'identidade_socio1.pdf', status: 'ok' },
@@ -14,20 +27,31 @@ export default function DocumentosPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <HeaderMobile />
+    <div className={`min-h-screen bg-white flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
+      <Sidebar onExpandChange={setSidebarExpanded} />
 
-      <main className="p-4">
+      <main
+        className={`p-4 flex-1 transition-margin duration-300 ${
+          isMobile
+            ? ''
+            : sidebarExpanded
+            ? 'ml-60'
+            : 'ml-20'
+        }`}
+      >
         <h1 className="text-xl font-bold text-black mb-8">Documentos</h1>
 
         <div className="flex justify-center mb-6">
           <div className="bg-[#5CE1E6] rounded-full p-4">
-            <FontAwesomeIcon icon={faUpload} className="text-[#022028] text-[24px] h-7 w-7" />
+            <FontAwesomeIcon
+              icon={faUpload}
+              className="text-[#022028] text-[24px] h-7 w-7"
+            />
           </div>
         </div>
 
         <div className="flex justify-center mb-6">
-          <button className="bg-[#022028] text-white px-6 py-3 rounded-md font-semibold text-l">
+          <button className="bg-[#022028] text-white px-6 py-3 rounded-md font-semibold text-lg">
             Selecionar Arquivo
           </button>
         </div>

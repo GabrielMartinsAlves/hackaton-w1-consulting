@@ -1,13 +1,36 @@
-import HeaderMobile from '@/components/HeaderMobile';
+'use client';
+
+import { useState, useEffect } from 'react';
+import Sidebar from '@/components/Sidebar';
 import EtapaItem from '@/components/EtapaItem';
 import ProgressBar from '@/components/ProgressBar';
 
 export default function AcompanhamentoPage() {
-  return (
-    <div className="min-h-screen bg-white">
-      <HeaderMobile />
+  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
 
-      <main className="p-4">
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 1024);
+    }
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div className={`min-h-screen bg-white flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
+      <Sidebar onExpandChange={setSidebarExpanded} />
+
+      <main
+        className={`p-4 flex-1 transition-margin duration-300 ${
+          isMobile
+            ? ''
+            : sidebarExpanded
+            ? 'ml-60'
+            : 'ml-20'
+        }`}
+      >
         <h1 className="text-xl font-bold text-black mb-4">Acompanhamento</h1>
 
         <div className="bg-[#F9F9F9] rounded-lg p-4 mb-6">
