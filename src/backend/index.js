@@ -19,6 +19,7 @@ const usersController = require('./controllers/usersController');
 const documentsController = require('./controllers/documentsController');
 const statusController = require('./controllers/statusController');
 const stepsController = require('./controllers/stepsController');
+const { sendWhatsAppMessage } = require('./controllers/whatsappController');
 
 app.use('/auth', authRoutes.router);
 app.use('/contracts', contractsController.router);
@@ -26,6 +27,7 @@ app.use('/users', usersController.router);
 app.use('/documents', documentsController.router);
 app.use('/status', statusController.router);
 app.use('/steps', stepsController.router);
+app.post('/send-whatsapp', sendWhatsAppMessage);
 
 app.get('/', (req, res) => {
   res.json({ message: 'API está funcionando!' });
@@ -51,6 +53,8 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
+
+app.use(express.json());
 
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, async () => {

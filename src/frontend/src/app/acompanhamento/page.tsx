@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Sidebar from '@/components/Sidebar';
 import EtapaItem from '@/components/EtapaItem';
 import ProgressBar from '@/components/ProgressBar';
+import jsPDF from 'jspdf';
 
 interface StepData {
   id: number;
@@ -25,6 +26,13 @@ export default function AcompanhamentoPage() {
   const [stepData, setStepData] = useState<StepData | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showWhatsAppForm, setShowWhatsAppForm] = useState(false);
+  const [message, setMessage] = useState('');
+  const [response, setResponse] = useState<string | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+
+  // Número de destino obtido do .env
+  const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5511999999999'; // Fallback caso a variável não esteja definida
 
   useEffect(() => {
     function handleResize() {
@@ -34,6 +42,24 @@ export default function AcompanhamentoPage() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (formRef.current && !formRef.current.contains(event.target as Node)) {
+        setShowWhatsAppForm(false);
+        setMessage('');
+        setResponse(null);
+      }
+    };
+
+    if (showWhatsAppForm) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showWhatsAppForm]);
 
   const redirectToLogin = () => {
     localStorage.removeItem('token');
@@ -191,21 +217,6 @@ export default function AcompanhamentoPage() {
     }
   };
 
-  const getStatusDisplayName = (statusNumber: number): string => {
-    switch (statusNumber) {
-      case 0:
-        return 'Pendente';
-      case 1:
-        return 'Em Andamento';
-      case 2:
-        return 'Concluído';
-      case 3:
-        return 'Negado';
-      default:
-        return 'Pendente';
-    }
-  };
-
   const calculateProgress = (): number => {
     if (!stepData) return 0;
 
@@ -240,121 +251,56 @@ export default function AcompanhamentoPage() {
     return 'Pendente';
   };
 
-  // FUNÇÃO ATUALIZADA: gera e baixa o relatório em PDF
-  const handleDownloadReport = async () => {
+  const handleDownloadReport = () => {
     if (!stepData || !userData) {
       alert('Dados não disponíveis para gerar o relatório.');
       return;
     }
 
-    try {
-      // Carrega a biblioteca jsPDF dinamicamente
-      const { default: jsPDF } = await import('jspdf');
-      
-      const doc = new jsPDF();
-      
-      // Configurações do documento
-      const pageWidth = doc.internal.pageSize.width;
-      const margin = 20;
-      let yPosition = 30;
-      
-      // Título do relatório
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Relatório de Acompanhamento', margin, yPosition);
-      
-      yPosition += 20;
-      
-      // Informações do usuário
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Informações do Projeto:', margin, yPosition);
-      
-      yPosition += 10;
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Projeto: Holding ${userData.name}`, margin, yPosition);
-      
-      yPosition += 8;
-      doc.text(`Usuário: ${userData.name}`, margin, yPosition);
-      
-      yPosition += 8;
-      doc.text(`Email: ${userData.email}`, margin, yPosition);
-      
-      yPosition += 8;
-      doc.text(`Status Geral: ${getOverallStatus()}`, margin, yPosition);
-      
-      yPosition += 8;
-      doc.text(`Progresso Total: ${calculateProgress()}%`, margin, yPosition);
-      
-      yPosition += 8;
-      doc.text(`Data do Relatório: ${new Date().toLocaleDateString('pt-BR')}`, margin, yPosition);
-      
-      yPosition += 25;
-      
-      // Detalhamento das etapas
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Detalhamento das Etapas:', margin, yPosition);
-      
-      yPosition += 15;
-      
-      const etapas = [
-        {
-          numero: 1,
-          titulo: 'Cadastro e Diagnóstico Inicial',
-          descricao: 'Coleta de informações e documentos básicos.',
-          status: stepData.registration
-        },
-        {
-          numero: 2,
-          titulo: 'Documentação e Análise',
-          descricao: 'Análise dos documentos e definição da estratégia.',
-          status: stepData.documentation
-        },
-        {
-          numero: 3,
-          titulo: 'Estruturação',
-          descricao: 'Preparação e organização dos processos.',
-          status: stepData.structuring
-        },
-        {
-          numero: 4,
-          titulo: 'Redação e Finalização',
-          descricao: 'Elaboração dos documentos finais.',
-          status: stepData.drafting
-        }
-      ];
-      
-      etapas.forEach((etapa) => {
-        // Verifica se precisa de nova página
-        if (yPosition > 250) {
-          doc.addPage();
-          yPosition = 30;
-        }
-        
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`${etapa.numero}. ${etapa.titulo}`, margin, yPosition);
-        
-        yPosition += 8;
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Descrição: ${etapa.descricao}`, margin + 5, yPosition);
-        
-        yPosition += 8;
-        doc.text(`Status: ${getStatusDisplayName(etapa.status)}`, margin + 5, yPosition);
-        
-        yPosition += 15;
-      });
-      
-      // Salva o PDF
-      const fileName = `relatorio_acompanhamento_${userData.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-      doc.save(fileName);
-      
-    } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
-      alert('Erro ao gerar o relatório PDF. Tente novamente.');
-    }
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Relatório de Acompanhamento', 20, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Usuário: ${userData.name}`, 20, 40);
+    doc.text(`Email: ${userData.email}`, 20, 50);
+    doc.text(`Projeto: Holding ${userData.name}`, 20, 60);
+    doc.text(`Status Geral: ${getOverallStatus()}`, 20, 70);
+    doc.text(`Progresso Total: ${calculateProgress()}%`, 20, 80);
+
+    doc.text('Detalhamento das Etapas:', 20, 100);
+    const rows = [
+      ['1', 'Cadastro e Diagnóstico Inicial', getStatusString(stepData.registration)],
+      ['2', 'Documentação e Análise', getStatusString(stepData.documentation)],
+      ['3', 'Estruturação', getStatusString(stepData.structuring)],
+      ['4', 'Redação e Finalização', getStatusString(stepData.drafting)],
+    ];
+
+    let y = 110;
+    rows.forEach((row) => {
+      doc.text(`${row[0]}. ${row[1]}: ${row[2]}`, 20, y);
+      y += 10;
+    });
+
+    doc.save(`relatorio_acompanhamento_${userData.name || 'usuario'}.pdf`);
+  };
+
+  const handleSendWhatsApp = async (e) => {
+    e.preventDefault();
+    const res = await fetch('http://localhost:3001/send-whatsapp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to: WHATSAPP_NUMBER, message }),
+    });
+    const data = await res.json();
+    setResponse(data.success ? 'Mensagem enviada com sucesso!' : `Erro: ${data.error}`);
+    setMessage('');
+  };
+
+  const handleCloseWhatsAppForm = () => {
+    setShowWhatsAppForm(false);
+    setMessage('');
+    setResponse(null);
   };
 
   if (loading) {
@@ -369,7 +315,7 @@ export default function AcompanhamentoPage() {
   }
 
   return (
-    <div className={`min-h-screen bg-white flex ${isMobileOrTablet ? 'flex-col' : 'flex-row'}`}>
+    <div className={`min-h-screen bg-white flex ${isMobileOrTablet ? 'flex-col' : 'flex-row'}`} onClick={() => showWhatsAppForm && setShowWhatsAppForm(false)}>
       <Sidebar onExpandChange={setSidebarExpanded} />
 
       <main
@@ -383,24 +329,8 @@ export default function AcompanhamentoPage() {
           {!isMobileOrTablet && (
             <button
               onClick={handleDownloadReport}
-              className="bg-[#022028] hover:bg-[#033642] text-white px-6 py-3 rounded-md text-sm font-semibold transition-colors duration-200 flex items-center gap-2"
+              className="bg-[#022028] text-white px-6 py-3 rounded-md text-sm font-semibold"
             >
-              <svg 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path 
-                  d="M12 15L7 10H10V3H14V10H17L12 15Z" 
-                  fill="currentColor"
-                />
-                <path 
-                  d="M20 18H4V20H20V18Z" 
-                  fill="currentColor"
-                />
-              </svg>
               Baixar Relatório
             </button>
           )}
@@ -480,26 +410,74 @@ export default function AcompanhamentoPage() {
         <div className="fixed bottom-4 left-4 right-4">
           <button
             onClick={handleDownloadReport}
-            className="w-full bg-[#022028] hover:bg-[#033642] text-white px-6 py-3 rounded-md text-sm font-semibold transition-colors duration-200 flex items-center justify-center gap-2"
+            className="w-full bg-[#022028] text-white px-6 py-3 rounded-md text-sm font-semibold"
           >
-            <svg 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path 
-                d="M12 15L7 10H10V3H14V10H17L12 15Z" 
-                fill="currentColor"
-              />
-              <path 
-                d="M20 18H4V20H20V18Z" 
-                fill="currentColor"
-              />
-            </svg>
             Baixar Relatório
           </button>
+        </div>
+      )}
+
+      {/* Botão com imagem WhatsApp.svg.webp */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // Evita que o clique no botão feche o formulário
+          setShowWhatsAppForm(!showWhatsAppForm);
+        }}
+        className={`fixed right-4 w-16 h-16 bg-transparent flex items-center justify-center shadow-lg hover:opacity-80 transition ${
+          isMobileOrTablet ? 'bottom-20' : 'bottom-4'
+        }`}
+      >
+        <img src="/assets/WhatsApp.svg.webp" alt="WhatsApp" className="w-full h-full object-contain" />
+      </button>
+
+      {/* Formulário editável de WhatsApp */}
+      {showWhatsAppForm && (
+        <div
+          ref={formRef}
+          className="fixed bottom-20 right-4 bg-white p-5 rounded-lg shadow-lg w-84 z-10"
+          onClick={(e) => e.stopPropagation()} // Evita que o clique no formulário feche ele mesmo
+        >
+          {/* Botão de fechar (X) */}
+          <button
+            onClick={handleCloseWhatsAppForm}
+            className="absolute top-2 right-3 text-gray-500 hover:text-gray-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          <form onSubmit={handleSendWhatsApp} className="space-y-4 pt-6">
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Digite sua mensagem..."
+              className="w-full p-2 border rounded h-24"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            >
+              Enviar
+            </button>
+          </form>
+          {response && (
+            <p className="mt-2 text-sm text-center">
+              {response}
+            </p>
+          )}
         </div>
       )}
     </div>
