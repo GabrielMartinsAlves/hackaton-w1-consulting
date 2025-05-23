@@ -21,7 +21,7 @@ const LoginPage = () => {
 
     try {
       const res = await fetch(
-        `${process.env.REACT_PUBLIC_URL_API}/auth/login`,
+        `${process.env.NEXT_PUBLIC_URL_API}/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

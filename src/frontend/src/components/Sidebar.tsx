@@ -40,7 +40,7 @@ export default function Sidebar({ onExpandChange }: { onExpandChange?: (expanded
 
   async function handleLogout() {
     const token = localStorage.getItem('token')
-    await fetch(`${process.env.REACT_PUBLIC_URL_API}/auth/logout`, {
+    await fetch(`${process.env.NEXT_PUBLIC_URL_API}/auth/logout`, {
       method: 'POST',
       headers: { Authorization: token ? `Bearer ${token}` : '' },
     })

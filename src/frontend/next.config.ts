@@ -1,5 +1,5 @@
 const nextConfig = {
   env: {
-    REACT_PUBLIC_URL_API: process.env.NEXT_PUBLIC_URL_API,
+    NEXT_PUBLIC_URL_API: process.env.NEXT_PUBLIC_URL_API,
   },
 };

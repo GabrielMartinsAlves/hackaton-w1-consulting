@@ -74,7 +74,7 @@ async function handleSubmit(e: React.FormEvent) {
     valorImovel: numericValue,
     obs,
   }
-  const apiUrl = process.env.REACT_PUBLIC_URL_API
+  const apiUrl = process.env.NEXT_PUBLIC_URL_API
   if (!apiUrl) {
     alert("Erro interno: URL da API não configurada")
     return

@@ -69,7 +69,7 @@ export default function AcompanhamentoPage() {
 
   const validateToken = async (token: string) => {
     try {
-      const response = await fetch(`${process.env.REACT_PUBLIC_URL_API}/auth/@me`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/auth/@me`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -88,7 +88,7 @@ export default function AcompanhamentoPage() {
 
   const fetchUserData = async (token: string) => {
     try {
-      const response = await fetch(`${process.env.REACT_PUBLIC_URL_API}/auth/@me`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/auth/@me`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -111,7 +111,7 @@ export default function AcompanhamentoPage() {
 
   const fetchStepData = async (token: string) => {
     try {
-      const response = await fetch(`${process.env.REACT_PUBLIC_URL_API}/steps`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/steps`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -135,7 +135,7 @@ export default function AcompanhamentoPage() {
 
   const createInitialSteps = async (token: string) => {
     try {
-      const response = await fetch(`${process.env.REACT_PUBLIC_URL_API}/steps`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/steps`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -286,7 +286,7 @@ export default function AcompanhamentoPage() {
 
   const handleSendWhatsApp = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    const res = await fetch(`${process.env.REACT_PUBLIC_URL_API}/send-whatsapp`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/send-whatsapp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ to: WHATSAPP_NUMBER, message }),

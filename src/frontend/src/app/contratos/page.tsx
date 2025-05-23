@@ -58,7 +58,7 @@ export default function ContratosPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${process.env.REACT_PUBLIC_URL_API}/contracts`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/contracts`, {
         headers: getAuthHeaders(),
       });
 

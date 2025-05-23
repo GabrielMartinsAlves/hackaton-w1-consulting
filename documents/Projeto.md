@@ -134,7 +134,7 @@ npm start
 ```bash
 cd frontend
 npm install
-# Configurar REACT_PUBLIC_URL_API no .env.local
+# Configurar NEXT_PUBLIC_URL_API no .env.local
 npm run dev
 ```
 
