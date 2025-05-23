@@ -107,7 +107,7 @@ export default function SimulacaoPage() {
       </header>
 
       <main className="p-6 max-w-3xl mx-auto pt-20">
-        <div className="text-center mb-8 text-white px-4">
+        <div className="text-center mb-8 mt-12 text-white px-4">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-white to-[#5CE1E6] bg-clip-text text-transparent">
             Simule sua Economia Fiscal
           </h1>
