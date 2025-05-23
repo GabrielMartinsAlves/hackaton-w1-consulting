@@ -248,6 +248,11 @@ hackathon-w1-consulting/
 
 ## 🎨 Design e UX
 
+### Protótipo de Alta e Guia Visual
+Acesse o link do figma para visualizar o nosso protótipo e nosso guia visual.
+
+[Link Figma.](https://www.figma.com/design/uNS2pUCfAcW7d6lSA1e0zX/Prot%C3%B3tipo-W1---Hackathon?node-id=0-1&t=9yKHOjJqJFNfipM7-1)
+
 ### Princípios de Design
 - **Mobile First**: Responsividade em todos os dispositivos
 - **Acessibilidade**: Contraste adequado e navegação intuitiva
