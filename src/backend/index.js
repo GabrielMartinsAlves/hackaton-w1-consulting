@@ -14,9 +14,18 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const authRoutes = require('./controllers/authController');
-const { authMiddleware } = require('./controllers/authController');
+const contractsController = require('./controllers/contractsController');
+const usersController = require('./controllers/usersController');
+const documentsController = require('./controllers/documentsController');
+const statusController = require('./controllers/statusController');
+const stepsController = require('./controllers/stepsController');
 
 app.use('/auth', authRoutes.router);
+app.use('/contracts', contractsController.router);
+app.use('/users', usersController.router);
+app.use('/documents', documentsController.router);
+app.use('/status', statusController.router);
+app.use('/steps', stepsController.router);
 
 app.get('/', (req, res) => {
   res.json({ message: 'API está funcionando!' });
@@ -43,15 +52,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 9000;
 app.listen(PORT, async () => {
   console.log(`Express started at http://localhost:${PORT}`);
-  
   try {
     await db.sequelize.authenticate();
     console.log('Conexão com o banco de dados estabelecida com sucesso!');
-    // Sincroniza os modelos com o banco de dados (cria as tabelas se não existirem)
-    await db.sequelize.sync({ force: false }); // Use force: true apenas para testes (recria as tabelas)
+    await db.sequelize.sync({ force: false });
     console.log('Modelos sincronizados com o banco de dados!');
   } catch (err) {
     console.error('Erro ao conectar ou sincronizar com o banco de dados:', err);

@@ -4,7 +4,25 @@ const Sequelize = require('sequelize');
 const config = require('./config.js');  
 
 const db = {};
-const sequelize = new Sequelize(config.url, config);
+
+// CORREÇÃO: Usar DATABASE_URL se disponível, senão usar configurações individuais
+const sequelize = config.url 
+  ? new Sequelize(config.url, {
+      dialect: config.dialect,
+      dialectOptions: config.dialectOptions,
+      logging: config.logging,
+      pool: config.pool,
+      define: config.define
+    })
+  : new Sequelize(config.database, config.username, config.password, {
+      host: config.host,
+      port: config.port,
+      dialect: config.dialect,
+      dialectOptions: config.dialectOptions,
+      logging: config.logging,
+      pool: config.pool,
+      define: config.define
+    });
 
 const modelFiles = [
   'statusModel.js',
