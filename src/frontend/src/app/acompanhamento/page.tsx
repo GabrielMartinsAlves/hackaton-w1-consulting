@@ -284,7 +284,7 @@ export default function AcompanhamentoPage() {
     doc.save(`relatorio_acompanhamento_${userData.name || 'usuario'}.pdf`);
   };
 
-  const handleSendWhatsApp = async (e) => {
+  const handleSendWhatsApp = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     const res = await fetch(`${process.env.REACT_PUBLIC_URL_API}/send-whatsapp`, {
       method: 'POST',

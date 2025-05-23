@@ -6,10 +6,12 @@ import { faPen, faPenToSquare as faPenToSquareRegular } from '@fortawesome/free-
 import StatusIcon from './StatusIcon';
 import { useState, useEffect } from 'react';
 
+type StatusType = 'ok' | 'pendente' | 'erro';
+
 interface Props {
   nome: string;
-  status: 'ok' | 'pendente' | 'erro';
-  acao: 'ver' | 'editar' | 'caneta';
+  status: StatusType;
+  acao: string;
 }
 
 export default function DocumentoRow({ nome, status, acao }: Props) {
@@ -28,7 +30,7 @@ export default function DocumentoRow({ nome, status, acao }: Props) {
     ver: 'Visualizar',
     editar: 'Editar',
     caneta: 'Assinar',
-  }[acao];
+  };
 
   const statusStyles = {
     ok: {
@@ -46,7 +48,7 @@ export default function DocumentoRow({ nome, status, acao }: Props) {
       bgColor: 'bg-[#FFE9E6]',
       label: 'Negado',
     },
-  };
+  } as const;
 
   return (
     <div className="grid grid-cols-[7fr_2fr_2fr] items-center text-sm px-4 py-4 border-t border-[#DDDDDD] bg-white text-black">
@@ -67,7 +69,7 @@ export default function DocumentoRow({ nome, status, acao }: Props) {
       <div className={isDesktop ? 'flex justify-center' : 'flex justify-end'}>
         {isDesktop ? (
           <span className="text-[#5CE1E6] font-semibold cursor-pointer select-none">
-            {actionLabel}
+            {actionLabel[acao as keyof typeof actionLabel]}
           </span>
         ) : (
           <FontAwesomeIcon

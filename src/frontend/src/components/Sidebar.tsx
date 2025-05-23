@@ -22,7 +22,7 @@ const menuItems = [
   { icon: faCog, label: 'Configurações', path: '/configuracoes' },
 ]
 
-export default function Sidebar({ onExpandChange }) {
+export default function Sidebar({ onExpandChange }: { onExpandChange?: (expanded: boolean) => void }) {
   const router = useRouter()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)

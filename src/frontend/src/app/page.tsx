@@ -40,7 +40,7 @@ export default function HoldingLanding() {
     },
   ]
 
-function formatCurrency(value) {
+function formatCurrency(value: string) {
   const onlyNumbers = value.replace(/\D/g, "")
   if (!onlyNumbers) return ""
   const number = parseInt(onlyNumbers) / 100
@@ -50,7 +50,7 @@ function formatCurrency(value) {
   })
 }
 
-function extractNumericValue(formattedValue) {
+function extractNumericValue(formattedValue: string) {
   if (!formattedValue) return ""
   return formattedValue
     .replace(/R\$\s?/g, "")

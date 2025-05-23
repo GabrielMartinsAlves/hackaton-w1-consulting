@@ -4,7 +4,7 @@ interface EtapaItemProps {
   numero: number;
   titulo: string;
   descricao: string;
-  status: 'pendente' | 'em_andamento' | 'concluido' | 'negado';
+  status: string;
 }
 
 const EtapaItem: React.FC<EtapaItemProps> = ({ numero, titulo, descricao, status }) => {
