@@ -18,6 +18,36 @@ export default function AcompanhamentoPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const redirectToLogin = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  };
+
+  const validateToken = async (token: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/auth/validate`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 401) {
+        redirectToLogin();
+      }
+    } catch (error) {
+      redirectToLogin();
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      redirectToLogin();
+    } else {
+      validateToken(token);
+    }
+  }, []);
+
   return (
     <div className={`min-h-screen bg-white flex ${isMobileOrTablet ? 'flex-col' : 'flex-row'}`}>
       <Sidebar onExpandChange={setSidebarExpanded} />
