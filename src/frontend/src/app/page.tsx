@@ -1,8 +1,9 @@
 'use client';
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 import {
   faCircleInfo,
   faLock,
@@ -10,6 +11,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function HoldingLanding() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [valorImovel, setValorImovel] = useState("");
   const [obs, setObs] = useState("");
@@ -36,193 +39,307 @@ export default function HoldingLanding() {
     },
   ];
 
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!termsAccepted) {
+      alert("Aceite os termos para continuar.");
+      return;
+    }
+    if (!valorImovel || Number(valorImovel) < 1) {
+      alert("O valor do imóvel deve ser um número positivo maior ou igual a 1.");
+      return;
+    }
+
+    const data = {
+      email,
+      valorImovel,
+      obs,
+    };
+
+    try {
+      await fetch("/informations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      router.push("/simulacao");
+    } catch {
+      alert("Erro ao enviar informações, tente novamente.");
+    }
+  }
+
+  function handleValorChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    if (val === "" || (/^\d+$/.test(val) && Number(val) >= 0)) {
+      setValorImovel(val);
+    }
+  }
+
+  useEffect(() => {
+    const fadeIns = document.querySelectorAll(".fade-in-on-scroll");
+    function checkFadeIns() {
+      const windowBottom = window.innerHeight;
+      fadeIns.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < windowBottom - 100) {
+          el.classList.add("visible");
+        }
+      });
+    }
+    checkFadeIns();
+    window.addEventListener("scroll", checkFadeIns);
+    return () => window.removeEventListener("scroll", checkFadeIns);
+  }, []);
+
   return (
-    <div className="max-w-md mx-auto font-sans text-gray-100">
-      <header className="bg-[#022028] px-4 py-3 flex items-center gap-2 font-bold text-white text-xl">
-        <Link href="/">
-          <Image src="/assets/w1_white.png" alt="Logo" width={34} height={17} />
+    <div className="min-h-screen bg-gradient-to-br from-[#022028] to-[#355054] bg-fixed">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-transparent backdrop-blur-sm bg-opacity-30 px-4 py-3 flex items-center gap-2 font-bold text-white text-xl transition-colors duration-500">        <Link href="/">
+          <Image
+            src="/assets/w1_white.png"
+            alt="Logo"
+            width={34}
+            height={17}
+            priority
+            className="w-8 h-4 md:w-10 md:h-5"
+          />
         </Link>
-        <div>Consultoria</div>
+        <div className="text-lg md:text-xl">Consultoria</div>
       </header>
 
-      <section className="bg-[#355054] px-6 py-8">
-        <h2 className="font-bold text-lg mb-2">Construa sua holding</h2>
-        <p className="mb-4 text-sm leading-relaxed">
-          A W1 Consultoria oferece a solução completa para estruturar sua holding
-          de forma segura, eficiente e transparente.
-        </p>
-        <button className="bg-black text-white px-4 py-2 rounded text-sm mb-8 hover:bg-gray-800 transition">
-          Acesse
-        </button>
-
-        <div className="bg-white text-gray-900 rounded p-4">
-          <h3 className="font-semibold mb-3">Benefícios da W1</h3>
-          <p className="mb-3 text-sm">
-            Conheça alguns dos benefícios que a W1 te garante na criação da sua
-            holding.
+      {/* Hero Section */}
+      <section className="pt-20 md:pt-32 px-6 py-8 md:py-16 max-w-7xl mx-auto text-white fade-in-on-scroll opacity-0 translate-y-10 transition-all duration-700 ease-out">
+        <div className="text-center mb-12 md:mb-20">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-[#5CE1E6] bg-clip-text text-transparent leading-tight">
+            Construa sua holding
+          </h1>
+          <p className="text-lg md:text-xl lg:text-2xl opacity-90 max-w-4xl mx-auto leading-relaxed mb-8">
+            A W1 Consultoria oferece a solução completa para estruturar sua
+            holding de forma segura, eficiente e transparente.
           </p>
-          <ul className="space-y-4 text-sm">
-            <li className="flex gap-3 items-start">
-              <span className="mt-1 text-[#0c253e]">
-                <FontAwesomeIcon icon={faCircleInfo} size="lg" />
-              </span>
-              <div>
-                <b>Processo Simplificado</b>
-                <p>
-                  Nossa plataforma guia você em cada etapa no processo de
-                  construção da sua holding.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-3 items-start">
-              <span className="mt-1 text-[#0c253e]">
-                <FontAwesomeIcon icon={faLock} size="lg" />
-              </span>
-              <div>
-                <b>Segurança Jurídica</b>
-                <p>
-                  Documentação completa e alinhada com a legislação vigente,
-                  acompanhada por especialistas.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-3 items-start">
-              <span className="mt-1 text-[#0c253e]">
-                <FontAwesomeIcon icon={faInfoCircle} size="lg" />
-              </span>
-              <div>
-                <b>Acompanhamento</b>
-                <p>
-                  Consulte o status do seu processo a qualquer momento, onde e
-                  quando quiser.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <div className="mt-8 bg-white rounded p-4 text-gray-900">
-          <h3 className="font-semibold mb-3">Simule agora</h3>
-          <p className="text-sm mb-4">
-            Faça uma simulação dos ganhos que você teria com o seu imóvel em uma
-            holding.
-          </p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!termsAccepted) {
-                alert("Aceite os termos para continuar.");
-                return;
-              }
-              alert(
-                `Simulação enviada com: ${email}, Valor do imóvel: ${valorImovel}, Observação: ${obs}`
-              );
-            }}
-          >
-            <label className="block mb-2 text-xs font-medium" htmlFor="email">
-              E-mail
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="Seu E-mail"
-              className="w-full mb-4 p-2 border border-gray-300 rounded text-gray-900"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-
-            <label className="block mb-2 text-xs font-medium" htmlFor="valor">
-              Valor do Imóvel
-            </label>
-            <input
-              id="valor"
-              type="number"
-              placeholder="Insira o valor do imóvel"
-              className="w-full mb-4 p-2 border border-gray-300 rounded text-gray-900"
-              value={valorImovel}
-              onChange={(e) => setValorImovel(e.target.value)}
-              required
-            />
-
-            <label className="block mb-2 text-xs font-medium" htmlFor="obs">
-              Observação
-            </label>
-            <textarea
-              id="obs"
-              placeholder="Insira alguma observação sobre"
-              className="w-full mb-4 p-2 border border-gray-300 rounded text-gray-900 resize-none"
-              rows={3}
-              value={obs}
-              onChange={(e) => setObs(e.target.value)}
-            />
-
-            <div className="flex items-center mb-4">
-              <input
-                id="terms"
-                type="checkbox"
-                checked={termsAccepted}
-                onChange={() => setTermsAccepted(!termsAccepted)}
-                className="mr-2"
-                required
-              />
-              <label htmlFor="terms" className="text-xs">
-                Eu aceito os termos{" "}
-                <a href="#" className="underline text-[#0c253e]">
-                  Termos de compromisso
-                </a>
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              className="bg-black text-white py-2 px-4 rounded w-full hover:bg-gray-800 transition"
-            >
-              Simular Agora
-            </button>
-          </form>
+          <button className="bg-gradient-to-r from-[#5CE1E6] to-[#4ecdc4] text-[#022028] px-8 py-4 md:px-12 md:py-5 rounded-3xl text-lg md:text-xl font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+            Acesse Agora
+          </button>
         </div>
       </section>
 
-      <section className="bg-[#355054] px-6 py-6 text-white">
-        <h3 className="font-semibold text-lg mb-3">
-          Relato de quem já conhece
-        </h3>
-        <p className="mb-6 text-sm max-w-sm">
-          Esses são alguns dos feedbacks de quem confiou no trabalho da W1 e não
-          se arrependeu.
-        </p>
-        <div className="space-y-4">
+      {/* Main Content Grid */}
+      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-8 lg:gap-16 mb-16">
+        
+        {/* Benefits Section */}
+        <section className="fade-in-on-scroll opacity-0 translate-y-10 transition-all duration-700 ease-out">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 text-gray-900 h-full">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#022028]">Benefícios da W1</h2>
+            <p className="mb-8 text-lg md:text-xl opacity-80 leading-relaxed">
+              Conheça alguns dos benefícios que a W1 te garante na criação da sua
+              holding.
+            </p>
+            <div className="space-y-8">
+              <div className="flex gap-6 items-start p-6 bg-gradient-to-r from-[#5CE1E6]/10 to-[#4ecdc4]/10 rounded-2xl border-l-4 border-[#5CE1E6]">
+                <span className="text-[#022028] flex-shrink-0 mt-1">
+                  <FontAwesomeIcon icon={faCircleInfo} size="2x" />
+                </span>
+                <div>
+                  <h3 className="font-bold text-xl md:text-2xl mb-3 text-[#022028]">Processo Simplificado</h3>
+                  <p className="text-lg leading-relaxed">
+                    Nossa plataforma guia você em cada etapa no processo de
+                    construção da sua holding.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-6 items-start p-6 bg-gradient-to-r from-[#5CE1E6]/10 to-[#4ecdc4]/10 rounded-2xl border-l-4 border-[#5CE1E6]">
+                <span className="text-[#022028] flex-shrink-0 mt-1">
+                  <FontAwesomeIcon icon={faLock} size="2x" />
+                </span>
+                <div>
+                  <h3 className="font-bold text-xl md:text-2xl mb-3 text-[#022028]">Segurança Jurídica</h3>
+                  <p className="text-lg leading-relaxed">
+                    Documentação completa e alinhada com a legislação vigente,
+                    acompanhada por especialistas.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-6 items-start p-6 bg-gradient-to-r from-[#5CE1E6]/10 to-[#4ecdc4]/10 rounded-2xl border-l-4 border-[#5CE1E6]">
+                <span className="text-[#022028] flex-shrink-0 mt-1">
+                  <FontAwesomeIcon icon={faInfoCircle} size="2x" />
+                </span>
+                <div>
+                  <h3 className="font-bold text-xl md:text-2xl mb-3 text-[#022028]">Acompanhamento</h3>
+                  <p className="text-lg leading-relaxed">
+                    Consulte o status do seu processo a qualquer momento, onde e
+                    quando quiser.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Simulation Form */}
+        <section className="fade-in-on-scroll opacity-0 translate-y-10 transition-all duration-700 ease-out">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 text-gray-900 h-full">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#022028]">Simule agora</h2>
+            <p className="text-lg md:text-xl mb-8 opacity-80 leading-relaxed">
+              Faça uma simulação dos ganhos que você teria com o seu imóvel em uma
+              holding.
+            </p>
+            <div className="space-y-6">
+              <div>
+                <label className="block mb-3 text-base font-semibold text-gray-700" htmlFor="email">
+                  E-mail
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Seu E-mail"
+                  className="w-full p-4 md:p-5 border-2 border-gray-300 rounded-2xl text-gray-900 text-lg focus:border-[#5CE1E6] focus:outline-none transition-colors"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block mb-3 text-base font-semibold text-gray-700" htmlFor="valor">
+                  Valor do Imóvel
+                </label>
+                <input
+                  id="valor"
+                  type="text"
+                  placeholder="Insira o valor do imóvel"
+                  className="w-full p-4 md:p-5 border-2 border-gray-300 rounded-2xl text-gray-900 text-lg focus:border-[#5CE1E6] focus:outline-none transition-colors"
+                  value={valorImovel}
+                  onChange={handleValorChange}
+                  inputMode="numeric"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-3 text-base font-semibold text-gray-700" htmlFor="obs">
+                  Observação
+                </label>
+                <textarea
+                  id="obs"
+                  placeholder="Insira alguma observação sobre"
+                  className="w-full p-4 md:p-5 border-2 border-gray-300 rounded-2xl text-gray-900 text-lg resize-none focus:border-[#5CE1E6] focus:outline-none transition-colors"
+                  rows={4}
+                  value={obs}
+                  onChange={(e) => setObs(e.target.value)}
+                />
+              </div>
+
+              <div className="flex items-start gap-3">
+                <input
+                  id="terms"
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={() => setTermsAccepted(!termsAccepted)}
+                  className="mt-1 w-5 h-5 rounded"
+                />
+                <label htmlFor="terms" className="text-base leading-relaxed cursor-pointer" onClick={() => setTermsAccepted(!termsAccepted)}>
+                  Eu aceito os termos{" "}
+                  <a
+                    href="https://www.w1.com.br/privacidade"
+                    className="underline text-[#022028] hover:text-[#5CE1E6] transition-colors"
+                  >
+                    Termos de compromisso
+                  </a>
+                </label>
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                className="w-full bg-gradient-to-r from-[#022028] to-[#355054] text-white py-4 md:py-5 rounded-3xl font-bold text-lg md:text-xl hover:shadow-xl transform hover:scale-[1.03] transition-all duration-300"
+              >
+                Simular Agora
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* Testimonials Section */}
+      <section className="max-w-7xl mx-auto px-6 py-16 md:py-24 text-white fade-in-on-scroll opacity-0 translate-y-10 transition-all duration-700 ease-out">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-[#5CE1E6] bg-clip-text text-transparent">
+            Relato de quem já conhece
+          </h2>
+          <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto leading-relaxed">
+            Esses são alguns dos feedbacks de quem confiou no trabalho da W1 e não
+            se arrependeu.
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map(({ text, name, role, img }, i) => (
             <div
               key={i}
-              className="bg-white text-gray-900 rounded p-4 flex gap-3 items-start"
+              className="bg-white text-gray-900 rounded-3xl p-8 shadow-2xl transform hover:scale-105 transition-all duration-300"
             >
-              <img
-                src={img}
-                alt={name}
-                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-              />
-              <div>
-                <p className="italic mb-2">“{text}”</p>
-                <p className="font-semibold">{name}</p>
-                <p className="text-xs">{role}</p>
+              <div className="flex items-center gap-4 mb-6">
+                <img
+                  src={img}
+                  alt={name}
+                  className="w-16 h-16 rounded-full object-cover border-4 border-[#5CE1E6]"
+                />
+                <div>
+                  <p className="font-bold text-lg text-[#022028]">{name}</p>
+                  <p className="text-sm opacity-70">{role}</p>
+                </div>
               </div>
+              <p className="italic text-lg leading-relaxed">"{text}"</p>
             </div>
           ))}
         </div>
       </section>
 
-      <footer className="bg-[#355054] text-white p-6 text-center">
-        <h3 className="font-semibold mb-2">Venha fazer parte</h3>
-        <p className="mb-4">
-          Acesse a nossa plataforma e comece o processo para a criação da sua
-          holding.
-        </p>
-        <button className="bg-black px-6 py-2 rounded hover:bg-gray-800 transition">
-          Acesse
-        </button>
+      {/* CTA Footer */}
+      <footer className="bg-[#022028] text-white py-16 md:py-24">
+        <div className="max-w-4xl mx-auto text-center px-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-[#5CE1E6] bg-clip-text text-transparent">
+            Venha fazer parte
+          </h2>
+          <p className="text-lg md:text-xl mb-10 opacity-90 leading-relaxed max-w-2xl mx-auto">
+            Acesse a nossa plataforma e comece o processo para a criação da sua
+            holding.
+          </p>
+          <button className="bg-gradient-to-r from-[#5CE1E6] to-[#4ecdc4] text-[#022028] px-12 py-5 rounded-3xl font-bold text-xl hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+            Acesse Agora
+          </button>
+        </div>
       </footer>
+
+      <style jsx>{`
+        .fade-in-on-scroll {
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .fade-in-on-scroll.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+          h1 {
+            font-size: 2.5rem !important;
+          }
+          h2 {
+            font-size: 2rem !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          h1 {
+            font-size: 2rem !important;
+          }
+          h2 {
+            font-size: 1.75rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
