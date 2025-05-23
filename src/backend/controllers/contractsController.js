@@ -1,24 +1,52 @@
-const express = require('express');
-const router = express.Router();
-const db = require('../models');
-const { authMiddleware } = require('./authController');
+const express = require('express')
+const router = express.Router()
+const db = require('../models')
+const { authMiddleware } = require('./authController')
 
 const Contract = db.Contract;
 
-// Listar contratos do usuário autenticado
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const contracts = await Contract.findAll({ 
+    const contracts = await db.Contract.findAll({ 
       where: { user_id: req.user.id },
       include: [
-        { model: db.Status, as: 'status' },
-        { model: db.Document, as: 'document' }
+        {
+          model: db.Status,
+          as: 'status',
+          attributes: ['id', 'status']
+        }
       ]
     });
     res.json(contracts);
   } catch (err) {
     console.error('Erro ao listar contratos:', err);
     res.status(500).json({ error: 'Erro ao buscar contratos' });
+  }
+});
+
+
+router.get('/:id', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const contract = await Contract.findOne({
+      where: { 
+        id: id,
+        user_id: req.user.id
+      },
+      include: [
+        { model: db.Status, as: 'status' },
+        { model: db.User, as: 'user' }
+      ]
+    });
+
+    if (!contract) {
+      return res.status(404).json({ error: 'Contrato não encontrado' });
+    }
+
+    res.json(contract);
+  } catch (err) {
+    console.error('Erro ao buscar contrato:', err);
+    res.status(500).json({ error: 'Erro ao buscar contrato' });
   }
 });
 
@@ -44,14 +72,14 @@ router.post('/', authMiddleware, async (req, res) => {
       user_id: req.user.id,
       contract,
       status_id,
-      document,
+      document: document || null,
     });
 
     // Carregar relacionamentos
     const contractWithRelations = await Contract.findByPk(newContract.id, {
       include: [
         { model: db.Status, as: 'status' },
-        { model: db.Document, as: 'document' }
+        { model: db.User, as: 'user' }
       ]
     });
 
@@ -81,7 +109,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     const { contract, status_id, document } = req.body;
 
     // Validações
-    if (!contract && !status_id && !document) {
+    if (!contract && !status_id && document === undefined) {
       return res.status(400).json({ 
         error: 'Nenhum campo válido para atualização' 
       });
@@ -106,16 +134,19 @@ router.put('/:id', authMiddleware, async (req, res) => {
       }
     }
 
-    const [updated] = await Contract.update(
-      { contract, status_id, document },
-      { where: { id } }
-    );
+    // Preparar dados para atualização (apenas campos fornecidos)
+    const updateData = {};
+    if (contract !== undefined) updateData.contract = contract;
+    if (status_id !== undefined) updateData.status_id = status_id;
+    if (document !== undefined) updateData.document = document;
+
+    const [updated] = await Contract.update(updateData, { where: { id } });
 
     if (updated) {
       const updatedContract = await Contract.findByPk(id, {
         include: [
           { model: db.Status, as: 'status' },
-          { model: db.Document, as: 'document' }
+          { model: db.User, as: 'user' }
         ]
       });
       res.json(updatedContract);
@@ -168,4 +199,4 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = { router: router, authMiddleware };
+module.exports = {router, authMiddleware}

@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const db = require('./models');
-
 const app = express();
 
 app.use(morgan('dev'));
@@ -19,6 +18,7 @@ const usersController = require('./controllers/usersController');
 const documentsController = require('./controllers/documentsController');
 const statusController = require('./controllers/statusController');
 const stepsController = require('./controllers/stepsController');
+const informationController = require('./controllers/informationController');
 
 app.use('/auth', authRoutes.router);
 app.use('/contracts', contractsController.router);
@@ -26,6 +26,7 @@ app.use('/users', usersController.router);
 app.use('/documents', documentsController.router);
 app.use('/status', statusController.router);
 app.use('/steps', stepsController.router);
+app.use('/informations', informationController.router);
 
 app.get('/', (req, res) => {
   res.json({ message: 'API está funcionando!' });
@@ -44,6 +45,7 @@ app.get('/db-test', async (req, res) => {
   }
 });
 
+// Middleware de erro
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -52,6 +54,7 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Inicialização do servidor
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, async () => {
   console.log(`Express started at http://localhost:${PORT}`);

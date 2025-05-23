@@ -29,7 +29,8 @@ const modelFiles = [
   'usersModel.js',
   'contractsModel.js',
   'documentsModel.js',
-  'stepsModel.js'
+  'stepsModel.js',
+  'leadsModel.js'
 ];
 
 modelFiles.forEach(file => {
