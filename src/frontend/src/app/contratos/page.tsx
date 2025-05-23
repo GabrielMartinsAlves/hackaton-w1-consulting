@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import HeaderMobile from '@/components/HeaderMobile';
+import { useState, useEffect } from 'react';
+import Sidebar from '@/components/Sidebar';
 import ContratoRow from '@/components/ContratoRow';
 import AdicionarPatrimonioDropdown from '@/components/AdicionarPatrimonioDropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,6 +16,17 @@ interface Contrato {
 export default function ContratosPage() {
   const [busca, setBusca] = useState('');
   const [filtroAberto, setFiltroAberto] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 1024);
+    }
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const [statusSelecionados, setStatusSelecionados] = useState<Record<string, boolean>>({
     ok: true,
@@ -44,11 +55,19 @@ export default function ContratosPage() {
   );
 
   return (
-    <div className="min-h-screen bg-white">
-      <HeaderMobile />
+    <div className={`min-h-screen bg-white flex flex-col ${isMobile ? '' : 'flex-row'}`}>
+      <Sidebar onExpandChange={setSidebarExpanded} />
 
-      <main className="p-4">
-        <h1 className="text-xl font-bold text-black mb-4">Contratos</h1>
+      <main
+        className={`p-8 flex-1 transition-margin duration-300 ${
+          isMobile
+            ? ''
+            : sidebarExpanded
+            ? 'ml-60'
+            : 'ml-20'
+        }`}
+      >
+        <h1 className="text-xl font-bold text-black mb-4 mt-4">Contratos</h1>
 
         <div className="flex gap-2 mb-4 relative">
           <div className="flex items-center bg-[#F3F5F4] rounded-md px-3 py-2 w-full justify-between">
@@ -105,7 +124,7 @@ export default function ContratosPage() {
           <div className="grid grid-cols-[7fr_2fr_2fr] font-bold text-black px-4 py-3 border-b border-[#DDDDDD] bg-[#F3F3F3]">
             <span>Contrato</span>
             <div className="text-center">Status</div>
-            <div className="text-right">Ações</div>
+            <div className={`${isMobile ? 'text-right' : 'text-center'}`}>Ações</div>
           </div>
 
           {contratosFiltrados.length > 0 ? (

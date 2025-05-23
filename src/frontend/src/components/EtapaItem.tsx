@@ -30,19 +30,35 @@ const EtapaItem = ({ numero, titulo, descricao, status }: EtapaItemProps) => {
 
   const iconClass = {
     concluido: 'text-[#5CE1E6]',
-    em_andamento: 'text-[#FFC857] animate-spin',
+    em_andamento: 'text-[#FFC857]',
     pendente: 'text-[#4A5A5A]',
+  }[status];
+
+  const statusText = {
+    concluido: 'Concluído',
+    em_andamento: 'Em Andamento',
+    pendente: 'Pendente',
   }[status];
 
   return (
     <div className={`flex justify-between items-center p-3 rounded-md ${bgColor}`}>
-      <div>
+      <div className="flex flex-col">
         <p className="font-bold text-sm text-black">
           {numero}. {titulo}
         </p>
         <p className="text-xs text-[#555555]">{descricao}</p>
       </div>
-      <FontAwesomeIcon icon={icon} className={`h-4 w-4 ${iconClass}`} />
+
+      <div className="flex flex-col items-end ml-4">
+        <div className="flex items-center text-xs text-[#555555]">
+          <span>Status</span>
+          <FontAwesomeIcon icon={icon} className={`h-4 w-4 ${iconClass} ml-2 ${icon == faSpinner? "animate-spin": ""}`} />
+        </div>
+
+        <div className={`text-xs ${iconClass} font-bold mt-1`}>
+          {statusText}
+        </div>
+      </div>
     </div>
   );
 };
