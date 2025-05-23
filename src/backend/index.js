@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const db = require('./models');
-
 const app = express();
 
 app.use(morgan('dev'));
@@ -19,7 +18,9 @@ const usersController = require('./controllers/usersController');
 const documentsController = require('./controllers/documentsController');
 const statusController = require('./controllers/statusController');
 const stepsController = require('./controllers/stepsController');
+const informationController = require('./controllers/informationController');
 const { sendWhatsAppMessage } = require('./controllers/whatsappController');
+
 
 app.use('/auth', authRoutes.router);
 app.use('/contracts', contractsController.router);
@@ -27,6 +28,7 @@ app.use('/users', usersController.router);
 app.use('/documents', documentsController.router);
 app.use('/status', statusController.router);
 app.use('/steps', stepsController.router);
+app.use('/informations', informationController.router);
 app.post('/send-whatsapp', sendWhatsAppMessage);
 
 app.get('/', (req, res) => {
@@ -46,6 +48,7 @@ app.get('/db-test', async (req, res) => {
   }
 });
 
+// Middleware de erro
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -53,6 +56,7 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
+
 
 app.use(express.json());
 

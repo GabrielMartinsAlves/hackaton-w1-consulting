@@ -136,7 +136,7 @@ export default function Sidebar({ onExpandChange }) {
         </nav>
       </div>
       <div className="px-2 py-6 border-t border-[#0e3941]">
-        <button onClick={handleLogout} className="flex items-center gap-3 text-[#5CE1E6] hover:text-white cursor-pointer px-6 py-3 rounded-md">
+        <button onClick={handleLogout} className="flex items-center gap-3 text-[#5CE1E6] hover:text-red-400 cursor-pointer px-6 py-3 rounded-md">
           <FontAwesomeIcon icon={faRightFromBracket} />
           <span className={`whitespace-nowrap transition-opacity duration-300 ${expanded ? 'opacity-100' : 'opacity-0'}`}>Desconectar</span>
         </button>

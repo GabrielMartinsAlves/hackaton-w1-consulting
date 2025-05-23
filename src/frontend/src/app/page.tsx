@@ -40,7 +40,6 @@ export default function HoldingLanding() {
     },
   ]
 
-    // Função para formatar valor monetário
 function formatCurrency(value) {
   const onlyNumbers = value.replace(/\D/g, "")
   if (!onlyNumbers) return ""
@@ -51,7 +50,6 @@ function formatCurrency(value) {
   })
 }
 
-// Função para extrair valor numérico
 function extractNumericValue(formattedValue) {
   if (!formattedValue) return ""
   return formattedValue
@@ -60,35 +58,45 @@ function extractNumericValue(formattedValue) {
     .replace(",", ".")
 }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!termsAccepted) {
-      alert("Aceite os termos para continuar.")
-      return
-    }
-    const numericValue = extractNumericValue(valorImovel)
-    if (!numericValue || Number(numericValue) < 1) {
-      alert("O valor do imóvel deve ser um número positivo maior ou igual a 1.")
-      return
-    }
-    const data = {
-      email,
-      valorImovel: numericValue,
-      obs,
-    }
-    try {
-      await fetch("/informations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-      router.push("/simulacao")
-    } catch {
-      alert("Erro ao enviar informações, tente novamente.")
-    }
+async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault()
+  if (!termsAccepted) {
+    alert("Aceite os termos para continuar.")
+    return
   }
+  const numericValue = extractNumericValue(valorImovel)
+  if (!numericValue || Number(numericValue) < 1) {
+    alert("O valor do imóvel deve ser um número positivo maior ou igual a 1.")
+    return
+  }
+  const data = {
+    email,
+    valorImovel: numericValue,
+    obs,
+  }
+  const apiUrl = process.env.REACT_PUBLIC_URL_API
+  if (!apiUrl) {
+    alert("Erro interno: URL da API não configurada")
+    return
+  }
+  try {
+    const res = await fetch(`${apiUrl}/informations`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) {
+      const err = await res.json()
+      throw new Error(err.error || "Falha na requisição")
+    }
+    router.push("/simulacao")
+  } catch (err: any) {
+    alert(`Erro ao enviar informações: ${err.message}`)
+  }
+}
+
 
   function handleAccessClick() {
     router.push("/login")
@@ -122,7 +130,7 @@ function extractNumericValue(formattedValue) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#022028] to-[#355054] bg-fixed">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-transparent backdrop-blur-sm bg-opacity-30 px-4 py-3 flex items-center gap-2 font-bold text-white text-xl transition-colors duration-500">
+      <header className="top-0 left-0 right-0 z-50 bg-transparent backdrop-blur-ms px-4 py-3 flex items-center gap-2 font-bold text-white text-xl transition-colors duration-500">
         <Link href="/login">
           <Image
             src="/assets/w1_white.png"

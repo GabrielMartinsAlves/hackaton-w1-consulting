@@ -99,7 +99,7 @@ export default function SimulacaoPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#022028] to-[#355054] bg-fixed">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-transparent backdrop-blur-sm bg-opacity-40 px-6 py-3 flex items-center gap-3 font-bold text-white text-xl transition-colors duration-500">
+      <header className="top-0 left-0 right-0 z-50 bg-transparent backdrop-blur-sm bg-opacity-40 px-6 py-3 flex items-center gap-3 font-bold text-white text-xl transition-colors duration-500">
         <img src="/assets/w1_white.png" alt="Logo W1" className="w-8 h-4 flex-shrink-0" />
         <div className="whitespace-nowrap text-lg leading-none select-none">
           Consultoria
