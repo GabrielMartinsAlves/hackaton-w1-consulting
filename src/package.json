@@ -1,0 +1,38 @@
+{
+  "name": "hackaton-w1-consulting",
+  "version": "1.0.0",
+  "description": "",
+  "main": "backend/index.js",
+  "scripts": {
+    "start": "npm run install:all && npm run dev:full",
+    "dev:full": "concurrently \"npm run backend:dev\" \"npm run frontend\"",
+    "dev": "cd backend && nodemon index.js",
+    "frontend": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:start": "cd frontend && npm start",
+    "backend": "cd backend && node index.js",
+    "backend:dev": "cd backend && nodemon index.js",
+    "backend:prod": "cd backend && node index.js",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "install:dev-deps": "npm install concurrently nodemon --save-dev",
+    "postinstall": "echo 'Dependências instaladas com sucesso!'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielMartinsAlves/hackaton-w1-consulting.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GabrielMartinsAlves/hackaton-w1-consulting/issues"
+  },
+  "homepage": "https://github.com/GabrielMartinsAlves/hackaton-w1-consulting#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.2"
+  }
+}
