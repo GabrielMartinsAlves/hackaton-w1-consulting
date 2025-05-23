@@ -40,19 +40,40 @@ export default function HoldingLanding() {
     },
   ]
 
+    // Função para formatar valor monetário
+function formatCurrency(value) {
+  const onlyNumbers = value.replace(/\D/g, "")
+  if (!onlyNumbers) return ""
+  const number = parseInt(onlyNumbers) / 100
+  return number.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  })
+}
+
+// Função para extrair valor numérico
+function extractNumericValue(formattedValue) {
+  if (!formattedValue) return ""
+  return formattedValue
+    .replace(/R\$\s?/g, "")
+    .replace(/\./g, "")
+    .replace(",", ".")
+}
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!termsAccepted) {
       alert("Aceite os termos para continuar.")
       return
     }
-    if (!valorImovel || Number(valorImovel) < 1) {
+    const numericValue = extractNumericValue(valorImovel)
+    if (!numericValue || Number(numericValue) < 1) {
       alert("O valor do imóvel deve ser um número positivo maior ou igual a 1.")
       return
     }
     const data = {
       email,
-      valorImovel,
+      valorImovel: numericValue,
       obs,
     }
     try {
@@ -63,7 +84,7 @@ export default function HoldingLanding() {
         },
         body: JSON.stringify(data),
       })
-      router.push("/login")
+      router.push("/simulacao")
     } catch {
       alert("Erro ao enviar informações, tente novamente.")
     }
@@ -74,10 +95,13 @@ export default function HoldingLanding() {
   }
 
   function handleValorChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = e.target.value
-    if (val === "" || (/^\d+$/.test(val) && Number(val) >= 0)) {
-      setValorImovel(val)
+    const value = e.target.value
+    if (value === "") {
+      setValorImovel("")
+      return
     }
+    const formatted = formatCurrency(value)
+    setValorImovel(formatted)
   }
 
   useEffect(() => {
@@ -230,7 +254,7 @@ export default function HoldingLanding() {
                 <input
                   id="valor"
                   type="text"
-                  placeholder="Insira o valor do imóvel"
+                  placeholder="R$ 0,00"
                   className="w-full p-4 md:p-5 border-2 border-gray-300 rounded-2xl text-gray-900 text-lg focus:border-[#5CE1E6] focus:outline-none transition-colors"
                   value={valorImovel}
                   onChange={handleValorChange}
