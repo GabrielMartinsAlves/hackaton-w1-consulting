@@ -111,7 +111,7 @@ export default function AcompanhamentoPage() {
 
   const fetchStepData = async (token: string) => {
     try {
-      const response = await fetch(`${getApiUrl()}/steps`, {
+      const response = await fetch(`${process.env.REACT_PUBLIC_URL_API}/steps`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -135,7 +135,7 @@ export default function AcompanhamentoPage() {
 
   const createInitialSteps = async (token: string) => {
     try {
-      const response = await fetch(`${getApiUrl()}/steps`, {
+      const response = await fetch(`${process.env.REACT_PUBLIC_URL_API}/steps`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
