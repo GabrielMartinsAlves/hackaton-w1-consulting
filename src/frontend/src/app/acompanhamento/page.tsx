@@ -93,32 +93,23 @@ export default function AcompanhamentoPage() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Dados das etapas recebidos:', data);
-
         if (Array.isArray(data) && data.length > 0) {
           setStepData(data[0]);
         } else {
-          console.log('Nenhum dado de etapas encontrado, criando registro inicial...');
           await createInitialSteps(token);
         }
       } else if (response.status === 401) {
-        console.error('Token inválido ao buscar etapas');
         redirectToLogin();
       } else {
-        console.error('Erro ao buscar dados das etapas:', response.status);
-        console.log('Criando registro inicial de etapas...');
         await createInitialSteps(token);
       }
     } catch (error) {
-      console.error('Erro ao buscar dados das etapas:', error);
-      console.log('Criando registro inicial de etapas devido a erro de conexão...');
       await createInitialSteps(token);
     }
   };
 
   const createInitialSteps = async (token: string) => {
     try {
-      console.log('Criando dados iniciais das etapas...');
       const response = await fetch(`${getApiUrl()}/steps`, {
         method: 'POST',
         headers: {
@@ -135,13 +126,10 @@ export default function AcompanhamentoPage() {
 
       if (response.ok) {
         const newStepData = await response.json();
-        console.log('Dados das etapas criados com sucesso:', newStepData);
         setStepData(newStepData);
       } else if (response.status === 401) {
-        console.error('Token inválido ao criar etapas');
         redirectToLogin();
       } else {
-        console.error('Erro ao criar dados iniciais das etapas:', response.status);
         setStepData({
           id: 0,
           user_id: 0,
@@ -152,7 +140,6 @@ export default function AcompanhamentoPage() {
         });
       }
     } catch (error) {
-      console.error('Erro ao criar dados iniciais das etapas:', error);
       setStepData({
         id: 0,
         user_id: 0,
@@ -169,21 +156,15 @@ export default function AcompanhamentoPage() {
       const token = localStorage.getItem('token');
 
       if (!token) {
-        console.log('Token não encontrado. Redirecionando para login...');
         redirectToLogin();
         return;
       }
 
-      console.log('Token encontrado. Validando...');
-
       try {
         const isValidToken = await validateToken(token);
         if (isValidToken) {
-          console.log('Token válido. Buscando dados...');
           await fetchUserData(token);
           await fetchStepData(token);
-        } else {
-          console.log('Token inválido. Redirecionando...');
         }
       } catch (error) {
         console.error('Erro na inicialização:', error);
@@ -207,6 +188,21 @@ export default function AcompanhamentoPage() {
         return 'negado';
       default:
         return 'pendente';
+    }
+  };
+
+  const getStatusDisplayName = (statusNumber: number): string => {
+    switch (statusNumber) {
+      case 0:
+        return 'Pendente';
+      case 1:
+        return 'Em Andamento';
+      case 2:
+        return 'Concluído';
+      case 3:
+        return 'Negado';
+      default:
+        return 'Pendente';
     }
   };
 
@@ -244,6 +240,123 @@ export default function AcompanhamentoPage() {
     return 'Pendente';
   };
 
+  // FUNÇÃO ATUALIZADA: gera e baixa o relatório em PDF
+  const handleDownloadReport = async () => {
+    if (!stepData || !userData) {
+      alert('Dados não disponíveis para gerar o relatório.');
+      return;
+    }
+
+    try {
+      // Carrega a biblioteca jsPDF dinamicamente
+      const { default: jsPDF } = await import('jspdf');
+      
+      const doc = new jsPDF();
+      
+      // Configurações do documento
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 20;
+      let yPosition = 30;
+      
+      // Título do relatório
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Relatório de Acompanhamento', margin, yPosition);
+      
+      yPosition += 20;
+      
+      // Informações do usuário
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Informações do Projeto:', margin, yPosition);
+      
+      yPosition += 10;
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Projeto: Holding ${userData.name}`, margin, yPosition);
+      
+      yPosition += 8;
+      doc.text(`Usuário: ${userData.name}`, margin, yPosition);
+      
+      yPosition += 8;
+      doc.text(`Email: ${userData.email}`, margin, yPosition);
+      
+      yPosition += 8;
+      doc.text(`Status Geral: ${getOverallStatus()}`, margin, yPosition);
+      
+      yPosition += 8;
+      doc.text(`Progresso Total: ${calculateProgress()}%`, margin, yPosition);
+      
+      yPosition += 8;
+      doc.text(`Data do Relatório: ${new Date().toLocaleDateString('pt-BR')}`, margin, yPosition);
+      
+      yPosition += 25;
+      
+      // Detalhamento das etapas
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Detalhamento das Etapas:', margin, yPosition);
+      
+      yPosition += 15;
+      
+      const etapas = [
+        {
+          numero: 1,
+          titulo: 'Cadastro e Diagnóstico Inicial',
+          descricao: 'Coleta de informações e documentos básicos.',
+          status: stepData.registration
+        },
+        {
+          numero: 2,
+          titulo: 'Documentação e Análise',
+          descricao: 'Análise dos documentos e definição da estratégia.',
+          status: stepData.documentation
+        },
+        {
+          numero: 3,
+          titulo: 'Estruturação',
+          descricao: 'Preparação e organização dos processos.',
+          status: stepData.structuring
+        },
+        {
+          numero: 4,
+          titulo: 'Redação e Finalização',
+          descricao: 'Elaboração dos documentos finais.',
+          status: stepData.drafting
+        }
+      ];
+      
+      etapas.forEach((etapa) => {
+        // Verifica se precisa de nova página
+        if (yPosition > 250) {
+          doc.addPage();
+          yPosition = 30;
+        }
+        
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${etapa.numero}. ${etapa.titulo}`, margin, yPosition);
+        
+        yPosition += 8;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Descrição: ${etapa.descricao}`, margin + 5, yPosition);
+        
+        yPosition += 8;
+        doc.text(`Status: ${getStatusDisplayName(etapa.status)}`, margin + 5, yPosition);
+        
+        yPosition += 15;
+      });
+      
+      // Salva o PDF
+      const fileName = `relatorio_acompanhamento_${userData.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+      
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      alert('Erro ao gerar o relatório PDF. Tente novamente.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -268,7 +381,26 @@ export default function AcompanhamentoPage() {
           <h1 className="text-xl font-bold text-black">Acompanhamento</h1>
 
           {!isMobileOrTablet && (
-            <button className="bg-[#022028] text-white px-6 py-3 rounded-md text-sm font-semibold mt-4">
+            <button
+              onClick={handleDownloadReport}
+              className="bg-[#022028] hover:bg-[#033642] text-white px-6 py-3 rounded-md text-sm font-semibold transition-colors duration-200 flex items-center gap-2"
+            >
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path 
+                  d="M12 15L7 10H10V3H14V10H17L12 15Z" 
+                  fill="currentColor"
+                />
+                <path 
+                  d="M20 18H4V20H20V18Z" 
+                  fill="currentColor"
+                />
+              </svg>
               Baixar Relatório
             </button>
           )}
@@ -312,7 +444,7 @@ export default function AcompanhamentoPage() {
         </div>
 
         <h2 className="text-md font-semibold text-black mb-2">Detalhamento das Etapas</h2>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mb-20">
           {stepData && (
             <>
               <EtapaItem
@@ -343,6 +475,33 @@ export default function AcompanhamentoPage() {
           )}
         </div>
       </main>
+
+      {isMobileOrTablet && (
+        <div className="fixed bottom-4 left-4 right-4">
+          <button
+            onClick={handleDownloadReport}
+            className="w-full bg-[#022028] hover:bg-[#033642] text-white px-6 py-3 rounded-md text-sm font-semibold transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <svg 
+              width="16" 
+              height="16" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                d="M12 15L7 10H10V3H14V10H17L12 15Z" 
+                fill="currentColor"
+              />
+              <path 
+                d="M20 18H4V20H20V18Z" 
+                fill="currentColor"
+              />
+            </svg>
+            Baixar Relatório
+          </button>
+        </div>
+      )}
     </div>
   );
 }
