@@ -76,7 +76,7 @@ export default function ContratoRow({ nome, status, acao }: Props) {
                 caneta: faPen,
               }[acao]
             }
-            className="text-[18px] text-[#5CE1E6]"
+            className="text-[18px] text-black"
           />
         )}
       </div>
