@@ -61,7 +61,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, async () => {
-  console.log(`Express started at http://localhost:${PORT}`);
+  console.log(`Express started at ${process.env.REACT_PUBLIC_URL_API}`);
   try {
     await db.sequelize.authenticate();
     console.log('Conexão com o banco de dados estabelecida com sucesso!');

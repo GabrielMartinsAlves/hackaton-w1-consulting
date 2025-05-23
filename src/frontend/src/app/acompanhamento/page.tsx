@@ -66,11 +66,10 @@ export default function AcompanhamentoPage() {
     window.location.href = '/';
   };
 
-  const getApiUrl = () => process.env.REACT_PUBLIC_URL_API || 'http://localhost:3001/api';
 
   const validateToken = async (token: string) => {
     try {
-      const response = await fetch(`${getApiUrl()}/auth/@me`, {
+      const response = await fetch(`${process.env.REACT_PUBLIC_URL_API}/auth/@me`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -89,7 +88,7 @@ export default function AcompanhamentoPage() {
 
   const fetchUserData = async (token: string) => {
     try {
-      const response = await fetch(`${getApiUrl()}/auth/@me`, {
+      const response = await fetch(`${process.env.REACT_PUBLIC_URL_API}/auth/@me`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -287,7 +286,7 @@ export default function AcompanhamentoPage() {
 
   const handleSendWhatsApp = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:3001/send-whatsapp', {
+    const res = await fetch(`${process.env.REACT_PUBLIC_URL_API}/send-whatsapp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ to: WHATSAPP_NUMBER, message }),

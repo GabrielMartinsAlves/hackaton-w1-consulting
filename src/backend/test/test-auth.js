@@ -1,7 +1,6 @@
 const axios = require('axios');
 
 // Configurações
-const API_URL = 'http://localhost:3000';
 const LOGIN_ENDPOINT = '/auth/login';
 const ME_ENDPOINT = '/auth/@me';
 
@@ -15,7 +14,7 @@ const credentials = {
 async function login() {
   try {
     console.log('Tentando fazer login com:', credentials.email);
-    const response = await axios.post(`${API_URL}${LOGIN_ENDPOINT}`, credentials);
+    const response = await axios.post(`${process.env.REACT_PUBLIC_URL_API}${LOGIN_ENDPOINT}`, credentials);
     
     console.log('Login bem-sucedido!');
     console.log('Resposta do login:', JSON.stringify(response.data, null, 2));
