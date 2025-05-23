@@ -13,8 +13,8 @@ export default function ConfiguracoesPage() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
-  const [nome, setNome] = useState('João Silva');
-  const [email, setEmail] = useState('joao.silva@email.com');
+  const [nome, setNome] = useState('Alice Exemplo');
+  const [email, setEmail] = useState('alice.teste@example.com');
   const [senha, setSenha] = useState('********');
 
   const [newName, setNewName] = useState('');
