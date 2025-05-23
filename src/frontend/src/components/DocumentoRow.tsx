@@ -78,7 +78,7 @@ export default function DocumentoRow({ nome, status, acao }: Props) {
                 ver: faEyeRegular,
                 editar: faPenToSquareRegular,
                 caneta: faPen,
-              }[acao]
+              }[acao as keyof typeof actionLabel] || faEyeRegular
             }
             className="text-[18px] text-black"
           />
