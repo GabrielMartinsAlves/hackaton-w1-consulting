@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar'
 import DocumentoRow from '@/components/DocumentoRow'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload } from '@fortawesome/free-solid-svg-icons'
+import ChatModal from '@/components/ChatModal'
 
 export default function DocumentosPage() {
   const [isMobile, setIsMobile] = useState(false)
@@ -118,6 +119,7 @@ export default function DocumentosPage() {
           </div>
         )}
       </main>
+      <ChatModal />
     </div>
   )
 }
