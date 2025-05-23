@@ -59,7 +59,7 @@ export default function ContratosPage() {
       <Sidebar onExpandChange={setSidebarExpanded} />
 
       <main
-        className={`p-4 flex-1 transition-margin duration-300 ${
+        className={`p-8 flex-1 transition-margin duration-300 ${
           isMobile
             ? ''
             : sidebarExpanded
@@ -67,7 +67,7 @@ export default function ContratosPage() {
             : 'ml-20'
         }`}
       >
-        <h1 className="text-xl font-bold text-black mb-4">Contratos</h1>
+        <h1 className="text-xl font-bold text-black mb-4 mt-4">Contratos</h1>
 
         <div className="flex gap-2 mb-4 relative">
           <div className="flex items-center bg-[#F3F5F4] rounded-md px-3 py-2 w-full justify-between">

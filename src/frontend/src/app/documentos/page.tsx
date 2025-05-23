@@ -31,7 +31,7 @@ export default function DocumentosPage() {
       <Sidebar onExpandChange={setSidebarExpanded} />
 
       <main
-        className={`p-4 flex-1 transition-margin duration-300 ${
+        className={`p-8 flex-1 transition-margin duration-300 ${
           isMobile
             ? ''
             : sidebarExpanded
@@ -39,7 +39,7 @@ export default function DocumentosPage() {
             : 'ml-20'
         }`}
       >
-        <h1 className="text-xl font-bold text-black mb-8">Documentos</h1>
+        <h1 className="text-xl font-bold text-black mb-8 mt-4">Documentos</h1>
 
         <div className="flex justify-center mb-6">
           <div className="bg-[#5CE1E6] rounded-full p-4">
