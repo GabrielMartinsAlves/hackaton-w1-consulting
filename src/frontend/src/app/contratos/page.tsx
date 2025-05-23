@@ -124,7 +124,7 @@ export default function ContratosPage() {
           <div className="grid grid-cols-[7fr_2fr_2fr] font-bold text-black px-4 py-3 border-b border-[#DDDDDD] bg-[#F3F3F3]">
             <span>Contrato</span>
             <div className="text-center">Status</div>
-            <div className="text-right">Ações</div>
+            <div className={`${isMobile ? 'text-right' : 'text-center'}`}>Ações</div>
           </div>
 
           {contratosFiltrados.length > 0 ? (

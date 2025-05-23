@@ -1,16 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 export default function AdicionarPatrimonioDropdown() {
   const [open, setOpen] = useState(false);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
 
   const opcoes = ['Imóvel', 'Automóvel', 'Bens financeiros', 'Outro'];
 
+  useEffect(() => {
+    function checkScreen() {
+      setIsMobileOrTablet(window.innerWidth <= 1024);
+    }
+    checkScreen();
+    window.addEventListener('resize', checkScreen);
+    return () => window.removeEventListener('resize', checkScreen);
+  }, []);
+
   return (
-    <div className="relative w-full max-w-sm">
+    <div className={`relative ${isMobileOrTablet ? 'w-full max-w-full' : 'w-full max-w-sm'}`}>
       <button
         onClick={() => setOpen(!open)}
         className={`w-full bg-[#022028] text-white text-sm font-normal px-4 py-3 flex items-center justify-center relative ${
