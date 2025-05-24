@@ -40,7 +40,7 @@ router.get('/user/:id', async (req, res) => {
         {
           model: db.Document,
           as: 'documents',
-          attributes: ['document', 'status_id'],
+          attributes: ['id','document', 'status_id'],
         },
       ],
     });
@@ -50,6 +50,7 @@ router.get('/user/:id', async (req, res) => {
     }
 
     const documentosFormatados = user.documents.map(doc => ({
+      id: doc.id,
       nome: doc.document,
       status: doc.status_id, 
     }));
@@ -67,28 +68,32 @@ router.get('/user/:id', async (req, res) => {
 
 
 // Atualizar um documento (apenas se for do usuário autenticado)
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { document, status_id } = req.body;
+
     const documentToUpdate = await Document.findByPk(id);
-    if (!documentToUpdate || documentToUpdate.user_id !== req.user.id) {
-      return res.status(403).json({ error: 'Unauthorized: You can only update your own documents' });
+    if (!documentToUpdate) {
+      return res.status(404).json({ error: 'Documento não encontrado' });
     }
+
     const [updated] = await Document.update(
       { document, status_id },
       { where: { id } }
     );
+
     if (updated) {
       const updatedDocument = await Document.findByPk(id);
       res.json(updatedDocument);
     } else {
-      res.status(404).json({ error: 'Document not found' });
+      res.status(404).json({ error: 'Falha ao atualizar documento' });
     }
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
+
 
 // Deletar um documento (apenas se for do usuário autenticado)
 router.delete('/:id', authMiddleware, async (req, res) => {
