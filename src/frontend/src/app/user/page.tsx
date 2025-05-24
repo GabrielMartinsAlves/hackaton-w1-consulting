@@ -142,7 +142,7 @@ export default function UsuarioDocumentosPage() {
                       <div className="text-center flex items-center justify-center gap-1">
                         <FontAwesomeIcon icon={getStatusIcon(doc.status as string)} className={`text-base ${getStatusTextColor(doc.status as string)}`} />
                         <span className={`hidden md:inline text-xs font-medium ${getStatusTextColor(doc.status as string)}`}>
-                          {doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}
+                          {String(doc.status).charAt(0).toUpperCase() + String(doc.status).slice(1)}
                         </span>
                       </div>
                       <div className="flex justify-end gap-3">
