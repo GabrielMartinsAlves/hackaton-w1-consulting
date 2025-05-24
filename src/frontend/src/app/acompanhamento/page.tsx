@@ -5,7 +5,6 @@ import Sidebar from '@/components/Sidebar';
 import EtapaItem from '@/components/EtapaItem';
 import ProgressBar from '@/components/ProgressBar';
 import jsPDF from 'jspdf';
-import ChatModal from '@/components/ChatModal';
 
 interface StepData {
   id: number;
