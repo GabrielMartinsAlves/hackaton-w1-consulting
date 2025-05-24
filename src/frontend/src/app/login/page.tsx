@@ -14,38 +14,40 @@ const LoginPage = () => {
     e.preventDefault()
     setError("")
 
-    if (!email || !password) {
-      setError("Preencha e-mail e senha")
+  if (!email || !password) {
+    setError("Preencha e-mail e senha")
+    return
+  }
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_URL_API}/auth/login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      }
+    )
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      setError(data.error || "Erro ao fazer login")
       return
     }
 
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_URL_API}/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      )
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error || "Erro ao fazer login")
-        return
-      }
-
-      if (data.token) {
-        localStorage.setItem("token", data.token)
-        router.push("/acompanhamento")
-      } else {
-        setError("Token não recebido")
-      }
-    } catch {
-      setError("Erro de conexão com o servidor")
+    if (data.token && data.user?.id) {
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("consultantId", String(data.user.id)) 
+      router.push("/usuarios") 
+    } else {
+      setError("Login inválido. Verifique email e senha.")
     }
+  } catch {
+    setError("Erro de conexão com o servidor")
   }
+}
+
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">

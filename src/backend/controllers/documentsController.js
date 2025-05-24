@@ -30,6 +30,42 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/user/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await db.User.findByPk(id, {
+      attributes: ['name', 'email'],
+      include: [
+        {
+          model: db.Document,
+          as: 'documents',
+          attributes: ['document', 'status_id'],
+        },
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    const documentosFormatados = user.documents.map(doc => ({
+      nome: doc.document,
+      status: doc.status_id, 
+    }));
+
+    res.json({
+      nome: user.name,
+      email: user.email,
+      documentos: documentosFormatados,
+    });
+  } catch (err) {
+    console.error('Erro ao buscar documentos do usuário:', err);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
 // Atualizar um documento (apenas se for do usuário autenticado)
 router.put('/:id', authMiddleware, async (req, res) => {
   try {

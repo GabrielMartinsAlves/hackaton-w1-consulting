@@ -32,7 +32,7 @@ const modelFiles = [
   'documentsModel.js',
   'stepsModel.js',
   'leadsModel.js',
-  'consultabtClientsModel.js',
+  'consultantClientsModel.js',
 ];
 
 modelFiles.forEach(file => {

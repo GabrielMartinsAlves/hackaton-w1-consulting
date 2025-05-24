@@ -32,6 +32,32 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findByPk(id, {
+      attributes: ['id', 'name', 'email', 'created_at', 'last_access', 'is_active'],
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      created_at: user.created_at,
+      last_access: user.last_access,
+      is_active: user.is_active,
+    });
+  } catch (err) {
+    console.error('Erro ao buscar usuário por ID:', err);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 // Atualizar o próprio usuário - MELHORADO
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
