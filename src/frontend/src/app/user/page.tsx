@@ -66,7 +66,7 @@ export default function UsuarioDocumentosPage() {
   const handleApprove = (nome: string) => {
     if (usuarioAtual) {
       const updated = usuarioAtual.documentos.map((doc) =>
-        doc.nome === nome ? { ...doc, status: 'aprovado' } : doc
+        doc.nome === nome ? { ...doc, status: 'aprovado' as const } : doc
       );
       setUsuarioAtual({ ...usuarioAtual, documentos: updated });
     }
@@ -75,7 +75,7 @@ export default function UsuarioDocumentosPage() {
   const handleReject = (nome: string) => {
     if (usuarioAtual) {
       const updated = usuarioAtual.documentos.map((doc) =>
-        doc.nome === nome ? { ...doc, status: 'negado' } : doc
+        doc.nome === nome ? { ...doc, status: 'negado' as const } : doc
       );
       setUsuarioAtual({ ...usuarioAtual, documentos: updated });
     }
