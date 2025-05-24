@@ -19,8 +19,9 @@ const documentsController = require('./controllers/documentsController');
 const statusController = require('./controllers/statusController');
 const stepsController = require('./controllers/stepsController');
 const informationController = require('./controllers/informationController');
+const consultantController = require('./controllers/consultantController');
+const consultantClientController = require('./controllers/consultantClientController');
 const { sendWhatsAppMessage } = require('./controllers/whatsappController');
-
 
 app.use('/auth', authRoutes.router);
 app.use('/contracts', contractsController.router);
@@ -29,6 +30,8 @@ app.use('/documents', documentsController.router);
 app.use('/status', statusController.router);
 app.use('/steps', stepsController.router);
 app.use('/informations', informationController.router);
+app.use('/consultants', consultantController.router);
+app.use('/consultant-clients', consultantClientController.router);
 app.post('/send-whatsapp', sendWhatsAppMessage);
 
 app.get('/', (req, res) => {
@@ -55,7 +58,6 @@ app.use((err, req, res, next) => {
     message: 'Erro interno do servidor',
   });
 });
-
 
 app.use(express.json());
 

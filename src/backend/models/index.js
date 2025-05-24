@@ -27,10 +27,12 @@ const sequelize = config.url
 const modelFiles = [
   'statusModel.js',
   'usersModel.js',
+  'consultantModel.js',
   'contractsModel.js',
   'documentsModel.js',
   'stepsModel.js',
-  'leadsModel.js'
+  'leadsModel.js',
+  'consultabtClientsModel.js',
 ];
 
 modelFiles.forEach(file => {
