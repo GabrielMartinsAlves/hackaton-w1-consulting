@@ -12,15 +12,9 @@ import {
   faCog,
   faRightFromBracket,
   faBars,
+  faUserGroup,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
-const menuItems = [
-  { icon: faChartBar, label: 'Acompanhamento', path: '/acompanhamento' },
-  { icon: faFolder, label: 'Documentos', path: '/documentos' },
-  { icon: faFileContract, label: 'Contratos', path: '/contratos' },
-  { icon: faCog, label: 'Configurações', path: '/configuracoes' },
-]
 
 export default function Sidebar({ onExpandChange }: { onExpandChange?: (expanded: boolean) => void }) {
   const router = useRouter()
@@ -28,6 +22,7 @@ export default function Sidebar({ onExpandChange }: { onExpandChange?: (expanded
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [isConsultor, setIsConsultor] = useState(false)
 
   useEffect(() => {
     function checkMobile() {
@@ -36,6 +31,20 @@ export default function Sidebar({ onExpandChange }: { onExpandChange?: (expanded
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+
+    fetch(`${process.env.NEXT_PUBLIC_URL_API}/auth/@me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setIsConsultor(data.isConsultant === true)
+      })
+      .catch(err => console.error('Erro ao verificar tipo de usuário:', err))
   }, [])
 
   async function handleLogout() {
@@ -56,6 +65,20 @@ export default function Sidebar({ onExpandChange }: { onExpandChange?: (expanded
     setExpanded(false)
     onExpandChange?.(false)
   }
+
+  const userMenuItems = [
+    { icon: faChartBar, label: 'Acompanhamento', path: '/acompanhamento' },
+    { icon: faFolder, label: 'Documentos', path: '/documentos' },
+    { icon: faFileContract, label: 'Contratos', path: '/contratos' },
+    { icon: faCog, label: 'Configurações', path: '/configuracoes' },
+  ]
+
+  const consultorMenuItems = [
+    { icon: faUserGroup, label: 'Clientes', path: '/clientes' },
+    { icon: faCog, label: 'Configurações', path: '/configuracoes' },
+  ]
+
+  const menuItems = isConsultor ? consultorMenuItems : userMenuItems
 
   if (isMobile) {
     return (
@@ -127,9 +150,7 @@ export default function Sidebar({ onExpandChange }: { onExpandChange?: (expanded
                 title={item.label}
               >
                 <FontAwesomeIcon icon={item.icon} className={isActive ? 'text-black' : 'text-[#5CE1E6]'} />
-                <span className={`whitespace-nowrap transition-opacity duration-300 ${expanded ? 'opacity-100' : 'opacity-0'}`}>
-                  {item.label}
-                </span>
+                <span className={`whitespace-nowrap transition-opacity duration-300 ${expanded ? 'opacity-100' : 'opacity-0'}`}>{item.label}</span>
               </Link>
             )
           })}
@@ -142,5 +163,5 @@ export default function Sidebar({ onExpandChange }: { onExpandChange?: (expanded
         </button>
       </div>
     </aside>
-)
+  )
 }

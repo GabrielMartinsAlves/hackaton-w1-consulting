@@ -16,6 +16,37 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 })
 
+router.get('/consultants/:id/clients', async (req, res) => {
+  const { id: consultant_id } = req.params;
+
+  try {
+    const associations = await db.ConsultantClient.findAll({
+      where: { consultant_id },
+      include: [
+        {
+          model: db.User,
+          as: 'client',
+          attributes: ['id','name', 'email'],
+        },
+      ],
+    });
+
+    const clients = associations
+      .filter(assoc => assoc.client)
+      .map((assoc) => ({
+        id: assoc.client.id,
+        nome: assoc.client.name,
+        email: assoc.client.email,
+      }));
+
+    res.json(clients);
+  } catch (err) {
+    console.error('Erro ao buscar clientes do consultor:', err);
+    res.status(500).json({ error: 'Erro ao buscar clientes do consultor' });
+  }
+});
+
+
 // GET a specific ConsultantClient association by consultant_id and client_id
 router.get('/:consultant_id/:client_id', authMiddleware, async (req, res) => {
   try {
