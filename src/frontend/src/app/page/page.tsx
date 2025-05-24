@@ -16,12 +16,12 @@ export default function DocumentosPage() {
   }, [])
 
   return (
-    <div className={`min-h-screen bg-white flex flex-col ${isMobile ? '' : 'flex-row'}`}>
+    <div className={`min-h-screen bg-white ${isMobile ? '' : 'flex'}`}>
       <Sidebar onExpandChange={setSidebarExpanded} />
 
       <main
-        className={`flex-1 flex flex-col items-center justify-center p-8 transition-margin duration-300 ${
-          isMobile ? '' : sidebarExpanded ? 'ml-60' : 'ml-20'
+        className={`flex-1 flex flex-col items-center justify-center p-8 transition-all duration-300 ${
+          isMobile ? 'mt-6' : sidebarExpanded ? 'ml-60' : 'ml-20'
         }`}
       >
         <Image
