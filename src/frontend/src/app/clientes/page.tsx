@@ -51,6 +51,7 @@ export default function UsuariosPage() {
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              'Cache-Control': 'no-cache',
             },
           }
         );

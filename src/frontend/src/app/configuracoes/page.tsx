@@ -156,7 +156,7 @@ export default function ConfiguracoesPage() {
           </div>
         </div>
 
-        {isConsultor && (
+        {!isConsultor && (
           <div className="bg-white w-full rounded-xl shadow-xl p-6 mb-6">
             <h2 className="text-lg font-semibold text-[#022028] mb-4">Conectar ao WhatsApp</h2>
             <WhatsAppQRCode />
