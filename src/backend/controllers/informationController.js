@@ -11,11 +11,6 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Email e valor do imóvel são obrigatórios' })
     }
 
-    const existingLead = await Lead.findByEmail(email)
-    if (existingLead) {
-      return res.status(400).json({ error: 'Esse email já foi registrado' })
-    }
-
     const lead = await Lead.create({
       email,
       property_value: parseFloat(valorImovel),
