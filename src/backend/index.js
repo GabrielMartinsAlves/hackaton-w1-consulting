@@ -21,7 +21,7 @@ const stepsController = require('./controllers/stepsController');
 const informationController = require('./controllers/informationController');
 const consultantController = require('./controllers/consultantController');
 const consultantClientController = require('./controllers/consultantClientController');
-const { sendWhatsAppMessage } = require('./controllers/whatsappController');
+const { sendWhatsAppMessage, getQrCode } = require('./controllers/whatsappController');
 
 app.use('/auth', authRoutes.router);
 app.use('/contracts', contractsController.router);
@@ -33,6 +33,7 @@ app.use('/informations', informationController.router);
 app.use('/consultants', consultantController.router);
 app.use('/consultant-clients', consultantClientController.router);
 app.post('/send-whatsapp', sendWhatsAppMessage);
+app.get('/whatsapp-qr', getQrCode);
 
 app.get('/', (req, res) => {
   res.json({ message: 'API está funcionando!' });

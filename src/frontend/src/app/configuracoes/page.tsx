@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTimes } from '@fortawesome/free-solid-svg-icons';
+import WhatsAppQRCode from '@/components/WhatsAppQRCode';
 
 export default function ConfiguracoesPage() {
   const [isMobile, setIsMobile] = useState(false);
@@ -13,6 +14,7 @@ export default function ConfiguracoesPage() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [isConsultor, setIsConsultor] = useState(false);
 
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
@@ -38,7 +40,7 @@ export default function ConfiguracoesPage() {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    fetch(`${API_BASE}/users`, {
+    fetch(`${API_BASE}/auth/@me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -50,11 +52,15 @@ export default function ConfiguracoesPage() {
         setEmail(data.email);
         setSenha('********');
         setUserId(data.id);
+        setIsConsultor(data.isConsultant);
       })
       .catch((err) => setApiError(err.message));
   }, []);
 
-  const updateUser = async (fields: { name?: string; email?: string; password?: string }, closeModal: () => void) => {
+  const updateUser = async (
+    fields: { name?: string; email?: string; password?: string },
+    closeModal: () => void
+  ) => {
     if (!userId) return;
 
     const token = localStorage.getItem('token');
@@ -149,6 +155,13 @@ export default function ConfiguracoesPage() {
             </button>
           </div>
         </div>
+
+        {isConsultor && (
+          <div className="bg-white w-full rounded-xl shadow-xl p-6 mb-6">
+            <h2 className="text-lg font-semibold text-[#022028] mb-4">Conectar ao WhatsApp</h2>
+            <WhatsAppQRCode />
+          </div>
+        )}
 
         {showNameModal && (
           <Modal
