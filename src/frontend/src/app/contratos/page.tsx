@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faFilter, faEye, faPenNib } from '@fortawesome/free-solid-svg-icons';
+import ChatModal from '@/components/ChatModal';
 
 interface Status {
   id: number;
@@ -220,6 +221,7 @@ export default function ContratosPage() {
             </div>
           )}
         </div>
+         <ChatModal />
       </main>
     </div>
   );

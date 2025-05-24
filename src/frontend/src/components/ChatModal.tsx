@@ -41,7 +41,7 @@ export default function ChatModal() {
     <>
       <div
         onClick={toggleChat}
-        className={`fixed bottom-10 right-8 w-16 h-16 rounded-full bg-[#022028] flex items-center justify-center cursor-pointer z-50 shadow-lg transition-opacity duration-300 ${
+        className={`fixed bottom-22 right-5 w-16 h-16 rounded-full bg-[#022028] flex items-center justify-center cursor-pointer z-50 shadow-lg transition-opacity duration-300 ${
           isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
@@ -50,7 +50,7 @@ export default function ChatModal() {
       {isOpen && (
         <div className="fixed right-8 top-1/2 transform -translate-y-1/2 w-[87vw] max-w-[470px] h-[80vh] sm:h-[85vh] bg-[#022028] shadow-lg rounded-lg p-4 flex flex-col transition-all duration-500 ease-in-out">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-[#5CE1E6]">Chat ao Vivo</h3>
+            <h3 className="font-semibold text-[#5CE1E6]">Chat consultor virtual</h3>
             <button onClick={toggleChat} className="text-[#5CE1E6] rounded-full p-2">
               <FontAwesomeIcon icon={faTimes} className="text-xl" />
             </button>
