@@ -1,83 +1,73 @@
 'use client'
 
-import React, { useState } from 'react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import React, { useState } from "react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 const LoginPage = () => {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError('')
+    setError("")
 
-    if (!email || !password) {
-      setError('Preencha e-mail e senha')
+  if (!email || !password) {
+    setError("Preencha e-mail e senha")
+    return
+  }
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_URL_API}/auth/login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      }
+    )
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      setError(data.error || "Erro ao fazer login")
       return
     }
 
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error || 'Erro ao fazer login')
-        return
-      }
-
-      if (data.token) {
-        localStorage.setItem('token', data.token)
-
-        // Buscar dados do usuário autenticado
-        const meRes = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/auth/@me`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${data.token}`,
-          },
-        })
-
-        const meData = await meRes.json()
-
-        if (!meRes.ok) {
-          setError(meData.error || 'Erro ao verificar perfil do usuário')
-          return
-        }
-
-        // Redireciona com base no tipo
-        const isConsultant = meData.userType === 'consultant' || meData.isConsultant === true
-        router.push(isConsultant ? '/clientes' : '/acompanhamento')
-      } else {
-        setError('Token não recebido')
-      }
-
-    } catch (err) {
-      console.error('Erro no login:', err)
-      setError('Erro de conexão com o servidor')
+    if (data.token && data.user?.id) {
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("consultantId", String(data.user.id)) 
+      router.push("/page") 
+    } else {
+      setError("Login inválido. Verifique email e senha.")
     }
+  } catch {
+    setError("Erro de conexão com o servidor")
   }
+}
+
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Mobile layout */}
       <div
         className="lg:hidden bg-cover bg-center flex-1 flex items-center justify-center"
         style={{
           backgroundImage: "url('/assets/background.png')",
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
         }}
       >
         <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-sm flex flex-col items-center">
-          <Image src="/assets/w1.png" alt="W1 Logo" width={160} height={160} className="w-40 mb-4" />
+          <Image
+            src="/assets/w1.png"
+            alt="W1 Logo"
+            width={160}
+            height={160}
+            className="w-40 mb-4"
+          />
           <p className="text-center text-sm text-gray-800 mb-6">
             Sua parceira na construção de <br /> holdings
           </p>
@@ -92,7 +82,6 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* Desktop layout */}
       <div className="hidden lg:flex w-full min-h-screen">
         <div className="w-1/2">
           <Image
@@ -104,7 +93,13 @@ const LoginPage = () => {
           />
         </div>
         <div className="w-1/2 flex flex-col items-center justify-center bg-white">
-          <Image src="/assets/w1.png" alt="W1 Logo" width={160} height={160} className="w-40 mb-4" />
+          <Image
+            src="/assets/w1.png"
+            alt="W1 Logo"
+            width={160}
+            height={160}
+            className="w-40 mb-4"
+          />
           <p className="text-center text-sm text-gray-800 mb-6 lg:whitespace-nowrap">
             Sua parceira na construção de holdings
           </p>
@@ -158,7 +153,7 @@ const LoginForm = ({
         <label className="text-sm text-gray-700 mb-1 block">Senha</label>
         <div className="relative">
           <input
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             placeholder="Insira sua senha"
             className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#002529]"
             value={password}
@@ -170,7 +165,7 @@ const LoginForm = ({
             onClick={() => setShowPassword((prev) => !prev)}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-xs"
           >
-            {showPassword ? 'Ocultar' : 'Mostrar'}
+            {showPassword ? "Ocultar" : "Mostrar"}
           </button>
         </div>
       </div>
