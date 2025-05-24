@@ -80,21 +80,36 @@ async function handleSubmit(e: React.FormEvent) {
     return
   }
   try {
-    const res = await fetch(`${apiUrl}/informations`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data),
-    })
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error || "Falha na requisição")
-    }
-    router.push("/simulacao")
-  } catch (err: any) {
-    alert(`Erro ao enviar informações: ${err.message}`)
+  // Envia os dados da simulação para a API
+  const res = await fetch(`${apiUrl}/informations`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Falha na requisição");
   }
+
+  // Após salvar os dados, envia o e-mail
+  await fetch(`${apiUrl}/email/send-simulation-email`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, valorImovel: numericValue }),
+  });
+
+  // Redireciona para a página de simulação
+  router.push("/simulacao");
+
+} catch (err: any) {
+  alert(`Erro ao enviar informações: ${err.message}`);
+}
+
 }
 
 

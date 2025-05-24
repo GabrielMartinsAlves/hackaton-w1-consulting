@@ -3,6 +3,7 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = requi
 const qrcode = require('qrcode-terminal');
 
 let sock;
+let latestQr = null;
 
 // Função para conectar ao WhatsApp
 const connectToWhatsApp = async () => {
@@ -15,8 +16,8 @@ const connectToWhatsApp = async () => {
   sock.ev.on('connection.update', (update) => {
     const { connection, lastDisconnect, qr } = update;
 
-    // Capturar e exibir o QR Code no terminal
     if (qr) {
+      latestQr = qr; // Salva o QR para uso em rota
       console.log('Novo QR Code gerado:');
       qrcode.generate(qr, { small: true });
     }
@@ -55,9 +56,21 @@ const sendWhatsAppMessage = async (req, res) => {
   }
 };
 
+// Função para retornar o QR Code atual
+const getQrCode = (req, res) => {
+  if (latestQr) {
+    res.status(200).json({ qr: latestQr });
+  } else {
+    res.status(204).json({ message: 'QR Code ainda não disponível' });
+  }
+};
+
 // Iniciar a conexão ao carregar o módulo
 connectToWhatsApp().catch((err) => {
   console.error('Erro ao iniciar a conexão com o WhatsApp:', err);
 });
 
-module.exports = { sendWhatsAppMessage };
+module.exports = {
+  sendWhatsAppMessage,
+  getQrCode
+};
