@@ -5,8 +5,6 @@ import Sidebar from '@/components/Sidebar';
 import {
   faCheck,
   faTimes,
-  faUpload,
-  faPlus,
   faCheckCircle,
   faClock,
   faTimesCircle,
@@ -48,12 +46,11 @@ export default function UsuarioDocumentosPage() {
         const data = await res.json();
 
         const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
         const documentosConvertidos = data.documentos.map((doc: any, index: number) => ({
           id: doc.id,
           nome: `Documento ${letras[index] || `#${index + 1}`}`,
           status: typeof doc.status === 'number' ? statusMap[doc.status] || 'desconhecido' : doc.status,
-          link: '#', 
+          link: '#',
         }));
 
         setUsuarioAtual({
@@ -118,7 +115,11 @@ export default function UsuarioDocumentosPage() {
     <div className={`min-h-screen bg-[#F3F5F4] flex ${isMobile ? 'flex-col' : 'flex-row'} relative`}>
       <Sidebar onExpandChange={setSidebarExpanded} />
 
-      <main className={`p-8 flex-1 transition-margin duration-300 ${isMobile ? '' : sidebarExpanded ? 'ml-60' : 'ml-20'}`}>
+      <main
+        className={`p-8 flex-1 transition-all duration-300 ${
+          isMobile ? 'mt-4' : sidebarExpanded ? 'ml-60' : 'ml-20'
+        }`}
+      >
         <div className="mb-8 space-y-4">
           <h1 className="text-3xl font-bold text-[#022028]">{usuarioAtual?.nome || 'Usuário'}</h1>
           <p className="text-[#555555]">{usuarioAtual?.email}</p>

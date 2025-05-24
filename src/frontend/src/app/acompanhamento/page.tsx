@@ -480,7 +480,6 @@ export default function AcompanhamentoPage() {
           )}
         </div>
       )}
-       <ChatModal />
     </div>
   );
 }
